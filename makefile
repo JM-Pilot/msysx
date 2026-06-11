@@ -5,7 +5,7 @@ SRC_DIR = src
 TOOLS_DIR = tools
 
 QEMU_FLAGS = -d int,cpu_reset -D $(BIN_DIR)/QEMU_LOGS.txt \
-		-no-reboot -no-shutdown
+		-no-reboot -no-shutdown -m 256M
 all: $(OUTPUT).iso
 
 $(BIN_DIR)/$(OUTPUT)_kernel.elf:

@@ -13,6 +13,7 @@
 #include <msysx/pmm.h>
 #include <msysx/requests.h>
 #include <uart/serial.h>
+#include <autoconf.h>
 void hcf()
 {
 	asm volatile ("cli");
@@ -43,12 +44,14 @@ void init_main()
 	psf_init();
 	
 	console_init();
-	console_puts("CONSOLE Initialized\n");
 	
+#if defined(CONFIG_ENABLE_UART)
 	if (serial_init() == 0){
 		serial_puts("\e[1;1H\e[2J");
 	}
-	
+#endif
+
+	console_puts("CONSOLE Initialized\n");
 	
 	printk("RESOLUTION: %dx%dx%d\n", 
 		fb_main->width, fb_main->height, fb_main->bpp);
@@ -64,13 +67,6 @@ void init_main()
 	printk("PMM Initialized\n");
 	asm volatile ("sti");
 	
-	uintptr_t a = pmm_alloc();
-	uintptr_t b = pmm_alloc();
-	printk("PMM: alloc 1: %lx\n", a);
-	printk("PMM: alloc 2: %lx\n", b);
-	pmm_free(a);
-	uintptr_t c = pmm_alloc();
-	printk("PMM: alloc 3 (should match alloc 1): %lx\n", c);
 
 	while (1){
 		console_draw_cursor();

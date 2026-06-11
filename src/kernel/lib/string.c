@@ -28,7 +28,7 @@ void *memmove(void *dest, void *src, size_t len)
 		uint8_t *lasts = s + (len - 1);
 		uint8_t *lastd = d + (len - 1);
 		while (len--)
-			*lastd++ = *lasts++;
+			*lastd-- = *lasts--;
 	}
 	return dest;
 }
@@ -43,7 +43,7 @@ void *memmove16(void *dest, void *src, size_t len)
 		uint16_t *lasts = s + (len - 1);
 		uint16_t *lastd = d + (len - 1);
 		while (len--)
-			*lastd++ = *lasts++;
+			*lastd-- = *lasts--;
 	}
 	return dest;
 }

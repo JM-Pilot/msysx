@@ -16,6 +16,7 @@ config ENABLE_SERIAL_COM1
 config USE_SERIAL_OUT
 	bool "Enable Serial Output"
 	default y
+	depends on ENABLE_SERIAL_COM1
 	help
 		when printing a character using putc/puts/printk serial_putc() will be called
 endmenu

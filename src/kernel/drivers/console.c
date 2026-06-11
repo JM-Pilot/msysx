@@ -46,7 +46,7 @@ void insert_nl()
 	if (++console_main.cursor_y >= CELLS_Y){
 		scroll_up();
 	}
-#if defined(CONFIG_ENABLE_SERIAL_COM1)
+#if defined(CONFIG_ENABLE_UART) && defined(CONFIG_USE_SERIAL_OUT)
 	serial_putc('\n');
 #endif
 	console_draw_cursor();
@@ -61,7 +61,7 @@ void console_putc(char c)
 		case '\r':
 			console_main.cursor_x = 0;
 			console_draw_cursor();
-#if defined(CONFIG_ENABLE_SERIAL_COM1)
+#if defined(CONFIG_ENABLE_UART) && defined(CONFIG_USE_SERIAL_OUT)
 			serial_putc('\r');
 #endif
 			return;
@@ -73,6 +73,9 @@ void console_putc(char c)
 				console_main.cursor_x * font_main->width, 
 				console_main.cursor_y * font_main->height,
 				console_main.fg, console_main.bg);
+#if defined(CONFIG_ENABLE_UART) && defined(CONFIG_USE_SERIAL_OUT)
+			serial_putc('\b');
+#endif
 			console_draw_cursor();
 			return;
 	}
@@ -81,7 +84,7 @@ void console_putc(char c)
 		console_main.cursor_y * font_main->height,
 		console_main.fg, console_main.bg);
 	
-#if defined(CONFIG_ENABLE_SERIAL_COM1)
+#if defined(CONFIG_ENABLE_UART) && defined(CONFIG_USE_SERIAL_OUT)
 	serial_putc(c);
 #endif
 

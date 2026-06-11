@@ -52,7 +52,10 @@ clean:
 	rm -rf *.iso
 	rm -rf $(BIN_DIR)
 	rm -rf $(SRC_DIR)/boot/autoconf.h
+
+clean-config:
 	rm -rf .config*
+
 clean-tools:
 	rm -rf tools/*
 

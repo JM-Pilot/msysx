@@ -42,10 +42,14 @@ void init_main()
 	fb_init();
 	psf_init();
 	
-	serial_init();
-	serial_puts("\e[1;1H\e[2J");
 	console_init();
 	console_puts("CONSOLE Initialized\n");
+	
+	if (serial_init() == 0){
+		serial_puts("\e[1;1H\e[2J");
+	}
+	
+	
 	printk("RESOLUTION: %dx%dx%d\n", 
 		fb_main->width, fb_main->height, fb_main->bpp);
 	gdt_init();

@@ -45,9 +45,8 @@ void insert_nl()
 	console_main.cursor_x = 0;
 	if (++console_main.cursor_y >= CELLS_Y){
 		scroll_up();
-		console_main.cursor_y--;
 	}
-#if CONFIG_USE_SERIAL_OUT
+#if defined(CONFIG_ENABLE_SERIAL_COM1)
 	serial_putc('\n');
 #endif
 	console_draw_cursor();
@@ -62,7 +61,7 @@ void console_putc(char c)
 		case '\r':
 			console_main.cursor_x = 0;
 			console_draw_cursor();
-#if CONFIG_USE_SERIAL_OUT
+#if defined(CONFIG_ENABLE_SERIAL_COM1)
 			serial_putc('\r');
 #endif
 			return;
@@ -82,7 +81,7 @@ void console_putc(char c)
 		console_main.cursor_y * font_main->height,
 		console_main.fg, console_main.bg);
 	
-#if CONFIG_USE_SERIAL_OUT
+#if defined(CONFIG_ENABLE_SERIAL_COM1)
 	serial_putc(c);
 #endif
 

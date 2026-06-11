@@ -10,7 +10,9 @@ bool com1_default = false;
 /* All depends on COM1 */
 int serial_init()
 {
+#if defined(CONFIG_ENABLE_SERIAL_COM1)
 	com1_default = CONFIG_ENABLE_SERIAL_COM1;
+#endif
 	if (com1_default == 1){
 		outb(COM1 + 1, 0x00);
 		outb(COM1 + 1, 0x00);

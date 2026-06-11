@@ -26,11 +26,12 @@ qemu-system-x86_64
 Running and Compiling:
 
 ```sh
-make run       # Run it using bios with qemu
-make run-efi   # Run it using uefi with qemu
-make clean     # Clean compiled code
-make clean-tools # Clean the tools directory
-make menuconfig # Configure the system
+make run           # Run it using bios with qemu
+make run-efi       # Run it using uefi with qemu
+make clean         # Clean compiled code
+make clean-tools   # Clean the tools directory
+make menuconfig    # Configure the system
+make clean-config  # Remove the .config and reset to default
 ```
 
 ### WARNINGS
@@ -38,4 +39,5 @@ make menuconfig # Configure the system
 ```sh
 /dev/ttyS0 IS NOT YET IMPLEMENTED DO NOT DISABLE THE "COM1" FEATURE AT THE
 MENUCONFIG
+
 ```

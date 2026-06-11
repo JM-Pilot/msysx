@@ -4,17 +4,10 @@
 
 ### Information
 
-Kernel:
->msysx kernel
-
-Boot Protocol:
->[Limine](https://github.com/Limine-Bootloader)
-
-Architectures supported:
->x86_64
-
-Languages used in kernel:
->C and Assembly
+- **Kernel:** msysx kernel
+- **Boot Protocol:** [Limine](https://github.com/limine-bootloader/limine)
+- **Architecture:** x86_64
+- **Languages:** C, Assembly
 
 ### Building
 

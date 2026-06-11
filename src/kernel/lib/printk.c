@@ -3,26 +3,30 @@
 #include <stdarg.h>
 #include <stdint.h>
 #include <msysx/console.h>
-char* conv_itoc(char *buf, int64_t val, int size, int base)
+#include <stdbool.h>
+char* conv_itoc(char *buf, int64_t val, int size, int base, bool is_unsigned)
 {
 	if (base == 10){
-		int i, sign;
-		char tmp_buffer[10];
-		if ((sign = val) < 0){
-			val = -val;
-		}
-		i = 0;
-		do {
-			tmp_buffer[i++] = val % 10 + '0';
-		} while ((val /= 10) > 0);
+		char tmp_buffer[21];
+        	int i = 0;
 
-		if (sign < 0){
-			tmp_buffer[i++] = '-';
+        	if (is_unsigned) {
+        		uint64_t uval = (uint64_t)val;
+			do {
+				tmp_buffer[i++] = uval % 10 + '0';
+			} while ((uval /= 10) > 0);
+		} else {
+			int sign = val < 0;
+			if (sign) val = -val;
+			do {
+				tmp_buffer[i++] = val % 10 + '0';
+			} while ((val /= 10) > 0);
+			if (sign) tmp_buffer[i++] = '-';
 		}
 		int j = 0;
-		while (i--) 
+		while (i--)
 			buf[j++] = tmp_buffer[i];
-		buf[j++] = '\0';
+		buf[j] = '\0';
 	} else if (base == 16){
 		char hex_val[] = "0123456789ABCDEF";
 		char tmp_buffer[18]; 
@@ -36,7 +40,7 @@ char* conv_itoc(char *buf, int64_t val, int size, int base)
 		j = 0;
 		while (i--)
 			buf[j++] = tmp_buffer[i];
-		buf[j++] = '\0';
+		buf[j] = '\0';
 	} else if (base == 2){
 		char tmp_buffer[66]; 
 		int i, j;
@@ -49,7 +53,7 @@ char* conv_itoc(char *buf, int64_t val, int size, int base)
 		j = 0;
 		while (i--)
 			buf[j++] = tmp_buffer[i];
-		buf[j++] = '\0';
+		buf[j] = '\0';
 	}
 	return buf;
 }
@@ -63,7 +67,7 @@ void vsprintf(char *buf, const char *fmt, va_list args)
 					char tmp[20];
 					conv_itoc(tmp, 
 						va_arg(args, int), 
-						0, 10);
+						0, 10, false);
 					for (int j = 0; tmp[j]; j++){
 						buf[i++] = tmp[j];
 					}
@@ -74,39 +78,57 @@ void vsprintf(char *buf, const char *fmt, va_list args)
 					char tmp[18];
 					conv_itoc(tmp, 
 						va_arg(args, uint32_t), 
-						32, 16);
-					for (int j = 0; tmp[j] != '\0'; j++){
+						32, 16, true);
+					for (int j = 0; tmp[j]; j++){
 						buf[i++] = tmp[j];
 					}
 					break;
 				}
 				case 'l':{
-					if (*++fmt == 'x'){
+					*fmt++;
+					if (*fmt == 'x'){
 						char tmp[18];
 						conv_itoc(tmp,
 						va_arg(args, uint64_t),
-						64, 16);
-						for (int j=0;tmp[j]!='\0';j++){
-							buf[i++] = tmp[j];
-						}
-						break;
-					} else {
-						char tmp[20];
-						conv_itoc(tmp, 
-							va_arg(args, int64_t), 
-							0, 10);
+						64, 16, true);
 						for (int j = 0; tmp[j]; j++){
 							buf[i++] = tmp[j];
 						}
+						break;
+					} else if (*fmt == 'u'){
+						char tmp[20];
+							conv_itoc(tmp, 
+							va_arg(args, uint64_t), 
+							0, 10, true);
+						for (int j = 0; tmp[j]; j++){
+							buf[i++] = tmp[j];
+						}
+						break;
+					}
+					char tmp[20];
+					conv_itoc(tmp, 
+						va_arg(args, int64_t), 
+						0, 10, false);
+					for (int j = 0; tmp[j]; j++){
+						buf[i++] = tmp[j];
 					}
 					break;
 				}
-					
+				case 'u':{
+					char tmp[20];
+					conv_itoc(tmp, 
+						va_arg(args, uint32_t), 
+						0, 10, true);
+					for (int j = 0; tmp[j]; j++){
+						buf[i++] = tmp[j];
+					}
+					break;
+				}
 				case 'b': {
 					char tmp[36];
 					conv_itoc(tmp, 
 						va_arg(args, uint32_t), 
-						32, 2);
+						32, 2, true);
 					for (int j = 0; tmp[j] != '\0'; j++){
 						buf[i++] = tmp[j];
 					}

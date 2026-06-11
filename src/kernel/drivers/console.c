@@ -15,7 +15,7 @@ void console_init()
 	console_main.prev_cursor_y = 0;
 }
 
-void draw_cursor()
+void console_draw_cursor()
 {
 	for (uint32_t y = 0; y < font_main->height; y++){
         	for (uint32_t x = 0; x < font_main->width; x++){
@@ -46,18 +46,18 @@ void insert_nl()
 		scroll_up();
 		console_main.cursor_y--;
 	}
-	draw_cursor();
+	console_draw_cursor();
 }
 void console_putc(char c)
 {
-	draw_cursor();
+	console_draw_cursor();
 	switch (c) {
 		case '\n':
 			insert_nl();
 			return;
 		case '\r':
 			console_main.cursor_x = 0;
-			draw_cursor();
+			console_draw_cursor();
 			return;
 		case '\b':
 			if (console_main.cursor_x > 0){
@@ -67,7 +67,7 @@ void console_putc(char c)
 				console_main.cursor_x * font_main->width, 
 				console_main.cursor_y * font_main->height,
 				console_main.fg, console_main.bg);
-			draw_cursor();
+			console_draw_cursor();
 			return;
 	}
 	psf_render_char(c,
@@ -82,7 +82,7 @@ void console_putc(char c)
 	if (++console_main.cursor_x >= CELLS_X)
 		insert_nl();
 
-	draw_cursor();
+	console_draw_cursor();
 }
 void console_puts(char *s)
 {

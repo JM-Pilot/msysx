@@ -17,5 +17,5 @@ extern struct console console_main;
 void console_init();
 void console_putc(char c);
 void console_puts(char *s);
-
+void console_draw_cursor();
 #endif

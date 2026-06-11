@@ -38,18 +38,18 @@ void isr_interrupt_handler(struct interrupt_frame *r)
 		for (uint32_t i = 0; i < CELLS_X; i++)
 			console_putc('=');
 		
-		for (int i = 0; i < (CELLS_X / 2 - (26 / 2)); i++)
+		for (uint32_t i = 0; i < (CELLS_X / 2 - (26 / 2)); i++)
 			console_putc(' ');
 		printk("ERROR, INTERRUPT REACHED\n");
 		
-		for (int i = 0; i < (CELLS_X / 2 - (26 / 2)); i++)
+		for (uint32_t i = 0; i < (CELLS_X / 2 - (26 / 2)); i++)
 			console_putc(' ');
 		printk("INTERRUPT: %s\n", r->interrupt_no < 19 ?
 			 exception_messages[r->interrupt_no] : "Reserved");
 		
-		for (int i = 0; i < (CELLS_X / 2 - (26 / 2)); i++)
+		for (uint32_t i = 0; i < (CELLS_X / 2 - (26 / 2)); i++)
 			console_putc(' ');
-		printk("ERROR NUM: %l \n", r->interrupt_error);
+		printk("ERROR NUM: %lu \n", r->interrupt_error);
 		
 		for (uint32_t i = 0; i < CELLS_X; i++)
 			console_putc('=');

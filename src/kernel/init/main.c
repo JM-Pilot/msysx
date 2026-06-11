@@ -60,7 +60,13 @@ void init_main()
 
 	asm volatile ("sti");
 
-	asm volatile("int $0x0");
-	for(;;);
+	while (1){
+		console_draw_cursor();
+
+		/* I might change this delay to a pit controlled 
+		 * nah im lazy, ima do this later
+		 */
+		for (int i = 0; i < 99999999; i++); 
+	}
 }
 

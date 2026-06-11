@@ -1,6 +1,8 @@
 #ifndef STDINT_H
 #define STDINT_H
 
+#define INT64_MAX (__INT64_C(9223372036854775807))
+
 typedef unsigned char 		uint8_t;
 typedef unsigned short 		uint16_t;
 typedef unsigned int 		uint32_t;

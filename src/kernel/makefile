@@ -39,7 +39,8 @@ C_FLAGS = \
 	-I arch/$(ARCH)/include \
 	-I include \
 	-I include/lib \
-	-I drivers/include
+	-I drivers/include \
+	-I ../boot/
 
 LD_FLAGS = \
 	-nostdlib \

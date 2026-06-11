@@ -1,0 +1,3 @@
+mainmenu "MSYSX CONFIGURATION UI"
+
+source "scripts/config/drivers/Kconfig"

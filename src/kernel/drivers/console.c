@@ -3,7 +3,8 @@
 #include <video/psf.h>
 #include <video/fb.h>
 #include <string.h>
-
+#include <autoconf.h>
+#include <uart/serial.h>
 struct console console_main;
 void console_init()
 {
@@ -46,6 +47,9 @@ void insert_nl()
 		scroll_up();
 		console_main.cursor_y--;
 	}
+#if CONFIG_USE_SERIAL_OUT
+	serial_putc('\n');
+#endif
 	console_draw_cursor();
 }
 void console_putc(char c)
@@ -58,6 +62,9 @@ void console_putc(char c)
 		case '\r':
 			console_main.cursor_x = 0;
 			console_draw_cursor();
+#if CONFIG_USE_SERIAL_OUT
+			serial_putc('\r');
+#endif
 			return;
 		case '\b':
 			if (console_main.cursor_x > 0){
@@ -74,7 +81,10 @@ void console_putc(char c)
 		console_main.cursor_x * font_main->width, 
 		console_main.cursor_y * font_main->height,
 		console_main.fg, console_main.bg);
-
+	
+#if CONFIG_USE_SERIAL_OUT
+	serial_putc(c);
+#endif
 
 	console_main.prev_cursor_x = console_main.cursor_x;
 	console_main.prev_cursor_y = console_main.cursor_y;

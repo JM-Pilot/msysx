@@ -71,7 +71,6 @@ void pmm_init()
 			ceiling = top;
 	}
 
-
 	pages = ceiling / PAGE_SIZE;
 	bitmap_size = pages / 8;
 	

@@ -1,0 +1,21 @@
+menu "DRIVER CONFIGURATION FOR MSYSX"
+
+config ENABLE_UART
+	bool "Enable UART driver"
+	default y
+	help
+		Enable support for the UART peripheral.
+
+
+config ENABLE_SERIAL_COM1
+	bool "Set COM1 as default"
+	default y
+	help
+		Set the COM1 As the default I/O if disabled /dev/ttyS0 will be used
+	
+config USE_SERIAL_OUT
+	bool "Enable Serial Output"
+	default y
+	help
+		when printing a character using putc/puts/printk serial_putc() will be called
+endmenu

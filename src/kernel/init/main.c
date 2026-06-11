@@ -12,15 +12,13 @@
 #include <interrupts/pic.h>
 #include <msysx/pmm.h>
 #include <msysx/requests.h>
-
+#include <uart/serial.h>
 void hcf()
 {
 	asm volatile ("cli");
 	for (;;)
 		asm volatile ("hlt");
 }
-
-
 
 void check_limine_requests()
 {
@@ -43,8 +41,13 @@ void init_main()
 	check_limine_requests();
 	fb_init();
 	psf_init();
+	
+	serial_init();
+	serial_puts("\e[1;1H\e[2J");
 	console_init();
-	console_puts("Hello World!\n");
+	console_puts("CONSOLE Initialized\n");
+	printk("RESOLUTION: %dx%dx%d\n", 
+		fb_main->width, fb_main->height, fb_main->bpp);
 	gdt_init();
 	printk("GDT Initialized\n");
 	idt_init();

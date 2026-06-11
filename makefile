@@ -5,9 +5,9 @@ SRC_DIR = src
 TOOLS_DIR = tools
 
 QEMU_FLAGS = -d int,cpu_reset -D $(BIN_DIR)/QEMU_LOGS.txt \
-		-no-reboot -no-shutdown -m 256M
-all: $(OUTPUT).iso
-
+		-no-reboot -no-shutdown -m 256M \
+		-serial stdio
+all: $(SRC_DIR)/boot/autoconf.h $(BIN_DIR)/$(OUTPUT).iso 
 $(BIN_DIR)/$(OUTPUT)_kernel.elf:
 	mkdir -p $(dir $@)
 	$(MAKE) -C $(SRC_DIR)/kernel \
@@ -23,7 +23,7 @@ $(TOOLS_DIR)/edk2-ovmf-bins:
 	curl -L https://github.com/osdev0/edk2-ovmf-stable-bins/releases/latest/download/edk2-ovmf-bins.tar.gz | gunzip | tar -xf - \
 	--one-top-level=$(dir $@)
 
-$(OUTPUT).iso: $(BIN_DIR)/$(OUTPUT)_kernel.elf \
+$(BIN_DIR)/$(OUTPUT).iso: $(BIN_DIR)/$(OUTPUT)_kernel.elf \
 $(TOOLS_DIR)/edk2-ovmf-bins $(TOOLS_DIR)/limine-binary
 	mkdir -p $(BIN_DIR)/iso_build/boot/limine
 	cp $(BIN_DIR)/$(OUTPUT)_kernel.elf $(BIN_DIR)/iso_build/
@@ -40,15 +40,28 @@ $(TOOLS_DIR)/edk2-ovmf-bins $(TOOLS_DIR)/limine-binary
 
 	$(TOOLS_DIR)/limine-binary/limine bios-install $@
 
-run-efi: $(OUTPUT).iso $(TOOLS_DIR)/edk2-ovmf-bins
-	qemu-system-x86_64 -cdrom $< \
+run-efi: $(SRC_DIR)/boot/autoconf.h $(BIN_DIR)/$(OUTPUT).iso \
+	$(TOOLS_DIR)/edk2-ovmf-bins
+	qemu-system-x86_64 -cdrom $(BIN_DIR)/$(OUTPUT).iso\
 		-bios $(TOOLS_DIR)/edk2-ovmf-bins/ovmf-code-x86_64.fd \
 		$(QEMU_FLAGS)
-run: $(OUTPUT).iso
-	qemu-system-x86_64 -cdrom $< \
+run: $(SRC_DIR)/boot/autoconf.h $(BIN_DIR)/$(OUTPUT).iso 
+	qemu-system-x86_64 -cdrom $(BIN_DIR)/$(OUTPUT).iso \
 		$(QEMU_FLAGS)
 clean:
 	rm -rf *.iso
 	rm -rf $(BIN_DIR)
+	rm -rf $(SRC_DIR)/boot/autoconf.h
+	rm -rf .config*
 clean-tools:
 	rm -rf tools/*
+
+
+menuconfig:
+	menuconfig
+ 
+$(SRC_DIR)/boot/autoconf.h: .config
+	genconfig --header-path $@
+ 
+.config:
+	genconfig --header-path $(SRC_DIR)/boot/autoconf.h

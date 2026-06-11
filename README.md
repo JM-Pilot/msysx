@@ -31,3 +31,10 @@ make run-efi   # Run it using uefi with qemu
 make clean     # Clean compiled code
 make clean-tools # Clean the tools directory
 ```
+
+### WARNINGS
+
+```sh
+/dev/ttyS0 IS NOT YET IMPLEMENTED DO NOT DISABLE THE "COM1" FEATURE AT THE
+MENUCONFIG
+```

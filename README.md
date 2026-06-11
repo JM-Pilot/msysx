@@ -30,6 +30,7 @@ make run       # Run it using bios with qemu
 make run-efi   # Run it using uefi with qemu
 make clean     # Clean compiled code
 make clean-tools # Clean the tools directory
+make menuconfig # Configure the system
 ```
 
 ### WARNINGS

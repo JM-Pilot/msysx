@@ -23,14 +23,18 @@ SECTIONS
 	. = ALIGN(CONSTANT(MAXPAGESIZE));
 
 	.text : {
+		_text_start = .;
 		*(.text.entry)
 		*(.text .text.*)
+		_text_end = .;
 	} :text
 
 	. = ALIGN(CONSTANT(MAXPAGESIZE));
 
 	.rodata : {
+		_rodata_start = .;
 		*(.rodata .rodata.*)
+		_rodata_end = .;
 	} :rodata
 
 	.note.gnu.build-id : {
@@ -40,12 +44,14 @@ SECTIONS
 	. = ALIGN(CONSTANT(MAXPAGESIZE));
 
 	.data : {
+		_data_start = .;
 		*(.data .data.*)
 	} :data
 
 	.bss : {
 		*(.bss .bss.*)
 		*(COMMON)
+		_data_end = .;
 	} :data
 
 	/DISCARD/ : {

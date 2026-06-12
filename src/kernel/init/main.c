@@ -1,4 +1,3 @@
-/* MIT LICENSE 2026 JM-Pilot */
 #include <limine.h>
 #include <stdint.h>
 #include <stddef.h>
@@ -14,6 +13,11 @@
 #include <msysx/requests.h>
 #include <uart/serial.h>
 #include <autoconf.h>
+#include <msysx/kernel.h>
+uint64_t kernel_pml4[512] __attribute__((aligned(4096)));
+uint64_t kernel_pdpt[512] __attribute__((aligned(4096)));
+uint64_t kernel_pd[512]   __attribute__((aligned(4096)));
+uint64_t kernel_pt[512]   __attribute__((aligned(4096)));
 void hcf()
 {
 	asm volatile ("cli");
@@ -36,6 +40,7 @@ void check_limine_requests()
 	if (exe_address_request.response == NULL)
 		hcf();
 }
+
 void init_main()
 {
 	asm volatile ("cli");
@@ -45,9 +50,11 @@ void init_main()
 	
 	console_init();
 	
+	console_set_col(0x00FF00, 0x000000);
 #if defined(CONFIG_ENABLE_UART)
 	if (serial_init() == 0){
 		serial_puts("\e[1;1H\e[2J");
+		serial_puts("Serial IO Initialized\n");
 	}
 #endif
 
@@ -55,6 +62,8 @@ void init_main()
 	
 	printk("RESOLUTION: %dx%dx%d\n", 
 		fb_main->width, fb_main->height, fb_main->bpp);
+	
+
 	gdt_init();
 	printk("GDT Initialized\n");
 	idt_init();
@@ -65,8 +74,13 @@ void init_main()
 
 	pmm_init();
 	printk("PMM Initialized\n");
+
+	init_kernel_tables();
+
+	console_set_col(0x3D98D1, 0x000000);
+	printk("Welcome to MSYSX v0.1\n");
+	console_set_col(0xFFFFFF, 0x000000);
 	asm volatile ("sti");
-	
 
 	while (1){
 		console_draw_cursor();

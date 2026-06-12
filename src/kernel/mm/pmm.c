@@ -10,12 +10,12 @@ uint8_t *bitmap;
 uint64_t pages;
 uint64_t bitmap_size;
 
-extern uint64_t _kernel_start;
-extern uint64_t _kernel_end;
+extern uint8_t _kernel_start;
+extern uint8_t _kernel_end;
 int set_used(uint64_t addr)
 {
 	uint64_t page = addr / 4096;
-	if (page > pages)
+	if (page >= pages)
 		return 1;
 	bitmap[page / 8] |= (1 << (page % 8));
 	return 0;
@@ -24,7 +24,7 @@ int set_used(uint64_t addr)
 int pmm_free(uint64_t addr)
 {
 	uint64_t page = addr / 4096;
-	if (page > pages)
+	if (page >= pages)
 		return 1;
 	bitmap[page / 8] &= ~(1 << (page % 8));
 	return 0;
@@ -72,7 +72,7 @@ void pmm_init()
 	}
 
 	pages = ceiling / PAGE_SIZE;
-	bitmap_size = pages / 8;
+	bitmap_size = (pages + 7) / 8;
 	
 	/* Get the address for the bitmap */
 	for (uint64_t i = 0; i < memmap->entry_count; i++){
@@ -98,6 +98,7 @@ void pmm_init()
 		exe_address_request.response;
 
 	pmm_alloc_region(exec->physical_base, &_kernel_end - &_kernel_start);
-	pmm_alloc_region((uint64_t)bitmap - hhdm->offset, bitmap_size);
+	pmm_alloc_region((uint64_t)bitmap - hhdm->offset,
+                 (bitmap_size + PAGE_SIZE - 1) & ~(PAGE_SIZE - 1));
 	pmm_alloc_region(0x0, 0x1000);
 }

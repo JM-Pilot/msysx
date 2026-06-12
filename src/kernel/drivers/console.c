@@ -101,3 +101,9 @@ void console_puts(char *s)
 	while (*s)
 		console_putc(*s++);
 }
+
+void console_set_col(uint32_t fg, uint32_t bg)
+{
+	console_main.fg = fg;
+	console_main.bg = bg;
+}

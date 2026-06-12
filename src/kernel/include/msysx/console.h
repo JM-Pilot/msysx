@@ -18,4 +18,5 @@ void console_init();
 void console_putc(char c);
 void console_puts(char *s);
 void console_draw_cursor();
+void console_set_col(uint32_t fg, uint32_t bg);
 #endif

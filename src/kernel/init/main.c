@@ -40,6 +40,8 @@ void check_limine_requests()
 		hcf();
 	if (exe_address_request.response == NULL)
 		hcf();
+	if (rsdp_request.response == NULL)
+		hcf();
 }
 
 void init_main()

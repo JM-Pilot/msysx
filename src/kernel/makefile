@@ -40,6 +40,7 @@ C_FLAGS = \
 	-I include \
 	-I include/lib \
 	-I drivers/include \
+	-I drivers/apci/uacpi/include \
 	-I ../boot/
 
 LD_FLAGS = \

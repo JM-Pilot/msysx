@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <msysx/console.h>
 #include <stdbool.h>
+#include <msysx/kernel.h>
 char* conv_itoc(char *buf, int64_t val, int size, int base, bool is_unsigned)
 {
 	if (base == 10){
@@ -171,4 +172,30 @@ void printk(const char *fmt, ...)
 	vsprintf(buffer, fmt, args);
 	va_end(args);
 	console_puts(buffer);	
+}
+
+void lprintk(uint32_t level, const char *fmt, ...)
+{
+	va_list (args);
+	va_start(args, fmt);
+	char buffer[1024];
+	vsprintf(buffer, fmt, args);
+	va_end(args);
+	switch (level)
+	{
+		case KERNEL_LOG_WARNING:
+			console_set_col(0xFFBF00, 0);
+			break;
+		case KERNEL_LOG_ERROR:
+			console_set_col(0xFF0000, 0);
+			break;
+		case KERNEL_LOG_DEBUG:
+			console_set_col(0x00FFFF, 0);
+			break;
+		default:
+			console_set_col(0xFFFFFF, 0);
+			break;
+	}
+	console_puts(buffer);	
+	console_set_col(0xFFFFFF, 0);
 }

@@ -9,15 +9,16 @@
 #include <boot/gdt.h>
 #include <interrupts/idt.h>
 #include <interrupts/pic.h>
-#include <msysx/pmm.h>
 #include <msysx/requests.h>
 #include <uart/serial.h>
 #include <autoconf.h>
 #include <msysx/kernel.h>
-uint64_t kernel_pml4[512] __attribute__((aligned(4096)));
-uint64_t kernel_pdpt[512] __attribute__((aligned(4096)));
-uint64_t kernel_pd[512]   __attribute__((aligned(4096)));
-uint64_t kernel_pt[512]   __attribute__((aligned(4096)));
+#include <string.h>
+#include <msysx/mm/pmm.h>
+#include <msysx/mm/vmm.h>
+#include <msysx/mm/heap.h>
+uint64_t *kernel_pml4 __attribute__((aligned(4096)));
+heap_bm_t kernel_heap;
 void hcf()
 {
 	asm volatile ("cli");
@@ -76,6 +77,10 @@ void init_main()
 	printk("PMM Initialized\n");
 
 	init_kernel_tables();
+	printk("VMM Initialized\n");
+
+	heap_init(&kernel_heap);
+	printk("HEAP Initialized\n");
 
 	console_set_col(0x3D98D1, 0x000000);
 	printk("Welcome to MSYSX v0.1\n");

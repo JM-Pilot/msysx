@@ -1,16 +1,12 @@
 #include <stdint.h>
-#include <msysx/vmm.h>
-#include <msysx/pmm.h>
+#include <msysx/mm/vmm.h>
+#include <msysx/mm/pmm.h>
 #include <msysx/requests.h>
 #include <stddef.h>
 #include <printk.h>
 #include <string.h>
 #include <msysx/kernel.h>
 
-#define PTE_PRESENT (1ULL << 0)
-#define PTE_WRITABLE (1ULL << 1)
-#define PTE_NX (1ULL << 63)
-#define ADDR_MASK 0xFFFFFFFFFF000ULL
 
 extern char _kernel_start[];
 extern char _kernel_end[];
@@ -102,52 +98,32 @@ void init_kernel_tables()
 {
 	uint64_t virt_base = exe_address_request.response->virtual_base;
 	uint64_t phys_base = exe_address_request.response->physical_base;
-	uint64_t pml4_phys = (uint64_t)pmm_alloc();
-	uint64_t *pml4 = (uint64_t*)phys_to_virt(pml4_phys);
-	memset(pml4, 0, 4096);
+	uint64_t kernel_pml4_phys = (uint64_t)pmm_alloc();
+	kernel_pml4 = (uint64_t*)phys_to_virt(kernel_pml4_phys);
+	memset(kernel_pml4, 0, 4096);
 
-	for (uint64_t addr = (uint64_t)_text_start; 
-		addr < (uint64_t)_text_end; 
-		addr += 0x1000
-	) {
-    		uint64_t phys = addr - virt_base + phys_base;
-    		vmm_map_page(pml4, phys, addr, PTE_PRESENT);
-	}
-
-	for (uint64_t addr = (uint64_t)_rodata_start; 
-		addr < (uint64_t)_rodata_end; 
-		addr += 0x1000
-	) {
-    		uint64_t phys = addr - virt_base + phys_base;
-    		vmm_map_page(pml4, phys, addr, PTE_PRESENT | PTE_NX);
-	}
-
-	for (uint64_t addr = (uint64_t)_data_start; 
-		addr < (uint64_t)_data_end; 
-		addr += 0x1000
-	) {
+	for (uint64_t addr = (uint64_t)_text_start; addr < (uint64_t)_text_end; addr += 0x1000) {
 		uint64_t phys = addr - virt_base + phys_base;
-		vmm_map_page(pml4, phys, addr, PTE_PRESENT | 
-			PTE_WRITABLE | PTE_NX);
+		vmm_map_page(kernel_pml4, phys, addr, PTE_PRESENT);
+	}
+	for (uint64_t addr = (uint64_t)_rodata_start; addr < (uint64_t)_rodata_end; addr += 0x1000) {
+		uint64_t phys = addr - virt_base + phys_base;
+		vmm_map_page(kernel_pml4, phys, addr, PTE_PRESENT | PTE_NX);
+	}
+	for (uint64_t addr = (uint64_t)_data_start; addr < (uint64_t)_data_end; addr += 0x1000) {
+		uint64_t phys = addr - virt_base + phys_base;
+		vmm_map_page(kernel_pml4, phys, addr, PTE_PRESENT | PTE_WRITABLE | PTE_NX);
 	}
 	for (uint64_t i = 0; i < memmap_request.response->entry_count; i++) {
-		struct limine_memmap_entry *entry = 
-			memmap_request.response->entries[i];
+		struct limine_memmap_entry *entry = memmap_request.response->entries[i];
 		if (entry->type == 1) continue;
-
-		for (uint64_t phys = entry->base; 
-			phys < entry->base + entry->length; 
-			phys += 0x1000
-		) {
-			vmm_map_page(
-				pml4, phys, 
-				phys + hhdm_request.response->offset, 
-				PTE_PRESENT | PTE_WRITABLE | PTE_NX
-			);
+		for (uint64_t phys = entry->base; phys < entry->base + entry->length; phys += 0x1000) {
+		vmm_map_page(kernel_pml4, phys, phys + hhdm_request.response->offset, PTE_PRESENT | PTE_WRITABLE | PTE_NX);
 		}
 	}
+
 	printk("hhdm map done\n");
 	printk("Moving pml4 to cr3\n");
-	asm volatile("mov %0, %%cr3" :: "r"(pml4_phys) : "memory");
+	asm volatile("mov %0, %%cr3" :: "r"(kernel_pml4_phys) : "memory");
 	printk("Done moving pml4 to cr3\n");
 }

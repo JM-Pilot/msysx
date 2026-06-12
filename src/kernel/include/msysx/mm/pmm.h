@@ -1,6 +1,6 @@
 #include <stdint.h>
-#ifndef _MSYSX_PMM_H
-#define _MSYSX_PMM_H
+#ifndef _MSYSX_MM_PMM_H
+#define _MSYSX_MM_PMM_H
 
 #define PAGE_SIZE 4096
 

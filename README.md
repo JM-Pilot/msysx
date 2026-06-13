@@ -1,5 +1,8 @@
 # MSYSX
 
+## Project Discontinued
+### This project will be on public archive for those who want to learn and read it
+
 ## A system built for compatibility with other unix like systems
 
 ### Information
